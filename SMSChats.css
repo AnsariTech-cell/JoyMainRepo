@@ -1,0 +1,112 @@
+.THIS .receiver{
+    width: 100%;
+    margin-bottom: 10px;
+}
+.THIS .heading {
+    text-align: center;
+    font-size: 20px;
+    margin-bottom: 10px;
+}
+.THIS .receiver .message-main{
+    text-align: center;
+    width: 96%;
+    margin: 0 auto;
+}
+.THIS .listAction{
+    justify-content: unset;
+    padding-bottom: 2px;
+    background-color: #f7f7f7;
+    padding-top: 1px;
+    border-bottom: 1px solid #dddbda;
+}
+.THIS .receiver .message-main .message{
+    background-color: #FFA500;
+    color:#fff;
+    padding: 6px 15px;
+    border-radius: 50px;
+    font-size: 13px;
+    word-break: break-all;
+    width: fit-content;
+    text-align : left;
+    margin: 0 auto;
+    margin-top: 6px;
+}
+.THIS .receiver .message-main .message a {
+    color:#fff;
+}
+
+.THIS .contact-list-main {
+    border: 1px solid #dedcdc;
+    height: 28.2rem;
+}
+.THIS .slds-utility-panel__body .body_container {
+    height: 100%;
+    overflow: hidden;
+}
+.THIS .contact {
+    border-bottom: 1px solid #e8e5e5;
+    min-height: 40px;
+    cursor: pointer;
+}
+.THIS .contact .icon {
+    float: left;
+}
+.THIS .contact .iconCheckbox {
+    float: left;
+}
+.THIS .contact .icon img {
+    width: 20px;
+    padding: 1px 2px 2px;
+    background-color: #ffb400;
+    border-radius: 4px;
+}
+.THIS .contact .content {
+    width: 80%;
+    margin-left: 38px;
+}
+.THIS .contact .content .name {
+    font-size: 0.875rem;
+    font-weight: 400;
+    color: #000;
+    margin-left: 0%;
+}
+.THIS .contact .content .message {
+    font-size:13px;
+    color: #3E3E3C;
+    line-height: 18px;
+    margin-left: 2%;
+    min-height: 15px;
+}
+.THIS .contact .content .message span {
+    font-size: 12px;
+    font-weight: bold;
+    vertical-align: text-bottom;
+    color: #098419;
+    padding-right: 4px;
+}
+.THIS .slds-card__body{
+    margin-bottom: 0px;
+    margin-top: 0px;
+}
+.THIS .slds-card__header{
+    padding-top: 0px;
+    margin-bottom: 0px;
+}
+.THIS .msgCount{
+    float: right;
+    background-color: rgba(27, 82, 151, 1.0);
+    border-radius: 45px;
+    height: 18px;
+    width: 18px;
+    color: #fff;
+    text-align: center;
+    padding: 2px;
+    font-size: 10px;
+    margin-right: 10px;
+}
+.THIS .active{
+    background-color: lavender;
+}
+.THIS .label-hidden > label {
+    display: none;
+}

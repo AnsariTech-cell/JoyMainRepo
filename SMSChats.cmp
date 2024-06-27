@@ -1,0 +1,138 @@
+<!--
+  @description       : 
+  @author            : ChangeMeIn@UserSettingsUnder.SFDoc
+  @group             : 
+  @last modified on  : 03-02-2022
+  @last modified by  : ChangeMeIn@UserSettingsUnder.SFDoc
+-->
+<aura:component controller="SMSChats_Controller" implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,force:lightningQuickAction" access="global" >
+    
+    <lightning:empApi aura:id="empApi" />
+    <lightning:utilityBarAPI aura:id="utilitybar" />
+    <aura:attribute name = "chatMessagesMap" type = "List"/>
+    <aura:attribute name = "recId" type="String"/>
+    <aura:attribute name = "unreadMsgCount" type="Integer"/>
+    <aura:attribute name = "openChatHistory" type="boolean" default="false"/>
+    <aura:attribute name = "openUnreadMessages" type="boolean" default="false"/>
+    <aura:attribute name = "tasks" type="Message__c[]" />
+    <aura:handler name = "init" value="{!this}" action="{!c.doInit}"/>
+    <aura:attribute name="usersDefaultPhone" type="String" />
+    <aura:attribute name = "orphanMessages" type = "List"/>
+    <aura:attribute name = "orphanMessagesCount" type="Integer"/>
+    <aura:attribute name = "orphanMessageTimeStamp" type="String"/>
+    <aura:attribute name = "openOrphanMessage" type="boolean" default="false"/>
+    <aura:attribute name = "displayType" type="string" default="All"/>
+    <aura:attribute name = "isLoading" type="boolean" default="true"/>
+    <aura:attribute name = "isUtilityOpen" type="boolean" default="false"/>
+    <aura:attribute name="static_resourceName" type="String" />
+    
+    
+    
+    <div class="slds-theme_default"> 
+        <div class="slds-grid slds-wrap mainDiv">
+            <div class="{!(v.openChatHistory ? 'slds-col slds-size_5-of-12 contact-list-main' : 'slds-size_1-of-1 contact-list-main')}" >
+                <div class="listAction" style="padding-top: 3px;padding-bottom: 3px;">
+                    <lightning:layout>
+                        <lightning:layoutItem class="slds-p-left_x-small slds-p-top_small" >
+                            <lightning:input aura:id="selectAllCheck" type="checkbox" style="width:22px" onchange="{!c.selectAll}" disabled="{!v.isLoading}"/>
+                        </lightning:layoutItem>
+                        <lightning:layoutItem class="slds-p-around_xx-small" >
+                            <lightning:select class="label-hidden" aura:id="selectAction" name="selectAction" variant="label-hidden" onchange="{!c.changeAction}" disabled="{!v.isLoading}">
+                                <option value="Select an Action">Select an Action</option>
+                                <option value="Mark as Read">Mark as Read</option>
+                                <option value="Mark as Unread">Mark as Unread</option>
+                                <option value="Archive Messages">Archive Messages</option>
+                            </lightning:select>
+                        </lightning:layoutItem>
+                        <lightning:layoutItem class="slds-p-around_xx-small label-hidden">
+                            <lightning:select class="label-hidden" aura:id="selectDisplay" name="selectDisplay" variant="label-hidden" onchange="{!c.displaySelect}" disabled="{!v.isLoading}">
+                                <option value="All">Inbox</option>
+                                <option value="Read">Read</option>
+                                <option value="Unread">Unread</option>
+                                <option value="Archived">Archived</option>
+                            </lightning:select>
+                        </lightning:layoutItem>
+                        
+                        
+                    </lightning:layout>
+                    
+                </div>
+                
+                <aura:if isTrue="{!v.isLoading}">
+                    <aura:if isTrue="{!v.isUtilityOpen}">
+                        <div class="demo-only" style="height:6rem">
+                            <div class="slds-spinner_container">
+                                <div role="status" class="slds-spinner slds-spinner_medium slds-spinner_brand">
+                                    <span class="slds-assistive-text">Loading</span>
+                                    <div class="slds-spinner__dot-a"></div>
+                                    <div class="slds-spinner__dot-b"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </aura:if>
+                    <aura:set attribute="else">
+                        <aura:if isTrue="{!empty(v.chatMessagesMap)}">
+                            <div style="text-align: center; margin-top: 35%;">
+                                No Messages Found...!
+                            </div>
+                            <aura:set attribute="else">
+                                <div class="slds-scrollable_y" style="max-height:400px">
+                                    <aura:iteration items="{!v.chatMessagesMap}" var="chat">
+                                        <div id="{!chat.whoId}" data-msgcount="{!chat.msgCount}" class="{!and(chat.whoId == v.recId, v.openChatHistory) ? 'slds-var-p-left_small slds-var-p-vertical_x-small contact active' : 'slds-var-p-left_small slds-var-p-vertical_x-small contact'}"
+                                             style="{!if(chat.msgCount > 0,'background-color: rgba(21, 137, 238, 0.1);padding-left: 8px;', 'background-color: none;padding-left: 8px;')}">
+                                            <div class="iconCheckbox" style="padding-right: 0px; width:25px">
+                                                <lightning:input type="checkbox" style="padding-right: 0px;" checked="{!chat.isSelected}"/>
+                                            </div> 
+                                            <div class="icon" id="{!chat.whoId}" onclick = "{!c.openChatHistory}">
+                                                <aura:if isTrue="{!chat.whoType == 'Opportunity'}">
+                                                    <lightning:icon iconName="standard:opportunity" size = "x-small"/>
+                                                </aura:if>
+                                                <aura:if isTrue="{!chat.whoType == 'Deal__c'}">
+                                                    <lightning:icon iconName="custom:custom16" size = "x-small"/>
+                                                </aura:if>
+                                                <aura:if isTrue="{!chat.whoType == 'Lead'}" >
+                                                    <lightning:icon iconName="standard:lead" size = "x-small"/>
+                                                </aura:if>
+                                                <aura:if isTrue="{!chat.whoType == 'Prospect__c'}" >
+                                                    <lightning:icon iconName="custom:custom15" size = "x-small"/>
+                                                </aura:if>
+                                                <aura:if isTrue="{!chat.whoType == 'Contact'}">
+                                                    <lightning:icon iconName="standard:contact" size = "x-small"/>
+                                                </aura:if>
+                                                <aura:if isTrue="{!chat.whoType == 'Account'}" >
+                                                    <lightning:icon iconName="standard:account" size = "x-small"/>
+                                                </aura:if>
+                                                <aura:if isTrue="{!chat.whoType == 'SObject'}" >
+                                                    <lightning:icon iconName="custom:custom15" size = "x-small"/>
+                                                </aura:if>
+                                            </div>
+                                            <div class="content" id="{!chat.whoId}" onclick = "{!c.openChatHistory}">
+                                                <div class="name">
+                                                    <a href="#" onclick="{!c.openRecord}" data-whoid="{!chat.whoId}" style="padding-left: 5px;">{!chat.whoName}</a>
+                                                    <aura:if isTrue="{!if(chat.msgCount > 0, true,false)}">
+                                                        <span class="msgCount">{!chat.msgCount}</span>
+                                                    </aura:if>
+                                                </div>
+                                                <div class="message slds-grid slds-wrap">
+                                                    <div class="slds-col slds-size_1-of-2">{!chat.msg} </div> 
+                                                    <div class="slds-col slds-size_1-of-2" style="font-size: 11px; text-align: right;padding-right: 0px;">{!chat.lastRecivedStamp}</div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </aura:iteration>
+                                </div>
+                            </aura:set>
+                        </aura:if>
+                    </aura:set>
+                </aura:if>
+            </div>
+            
+            <aura:if isTrue = "{!v.openChatHistory}" >
+                <div class="slds-col slds-size_7-of-12" style="padding-top: 7px;height: 100%;">
+                    <c:Send_SMS recordId="{!v.recId}" heightRem="18.18" calledFromUtility="true"/>
+                </div>
+            </aura:if>
+            
+        </div>
+    </div>
+</aura:component>
